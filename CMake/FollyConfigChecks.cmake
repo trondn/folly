@@ -65,14 +65,32 @@ string(REGEX REPLACE
   CMAKE_REQUIRED_FLAGS
   "${CMAKE_REQUIRED_FLAGS}")
 
+# pthread_atfork requires linking against the appropriate thread libraries
+# on older Linux distributions (e.g. CentOS 6).
+include(CMakePushCheckState)
+cmake_push_check_state()
+set(CMAKE_REQUIRED_LIBRARIES Threads::Threads)
 check_symbol_exists(pthread_atfork pthread.h FOLLY_HAVE_PTHREAD_ATFORK)
+cmake_pop_check_state()
 
 # Unfortunately check_symbol_exists() does not work for memrchr():
 # it fails complaining that there are multiple overloaded versions of memrchr()
 check_function_exists(memrchr FOLLY_HAVE_MEMRCHR)
 check_symbol_exists(preadv sys/uio.h FOLLY_HAVE_PREADV)
 check_symbol_exists(pwritev sys/uio.h FOLLY_HAVE_PWRITEV)
+
+# clock_gettime requires linking against rt on older Linux
+# distributions (e.g. CentOS 6).
+check_library_exists("rt" clock_gettime "" HAVE_LIBRT)
+if(HAVE_LIBRT)
+  set_property(TARGET Threads::Threads APPEND PROPERTY INTERFACE_LINK_LIBRARIES rt)
+endif()
+
+include(CMakePushCheckState)
+cmake_push_check_state()
+set(CMAKE_REQUIRED_LIBRARIES Threads::Threads)
 check_symbol_exists(clock_gettime time.h FOLLY_HAVE_CLOCK_GETTIME)
+cmake_pop_check_state()
 
 
 check_function_exists(
