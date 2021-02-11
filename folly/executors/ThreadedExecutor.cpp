@@ -49,7 +49,7 @@ std::shared_ptr<ThreadFactory> ThreadedExecutor::newDefaultThreadFactory() {
 }
 
 void ThreadedExecutor::work(Func& func) {
-  invokeCatchingExns("ThreadedExecutor: func", std::exchange(func, {}));
+  func();
   controlMessages_.enqueue(
       {Message::Type::Join, {}, std::this_thread::get_id()});
 }

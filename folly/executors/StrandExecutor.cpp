@@ -98,8 +98,7 @@ void StrandContext::executeNext(
   std::size_t pendingCount = 0;
   for (std::size_t i = 0; i < maxItemsToProcessSynchronously; ++i) {
     QueueItem item = thisPtr->queue_.dequeue();
-    Executor::invokeCatchingExns(
-        "StrandExecutor: func", std::exchange(item.func, {}));
+    item.func();
 
     ++pendingCount;
 

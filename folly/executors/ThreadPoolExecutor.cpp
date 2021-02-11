@@ -92,13 +92,10 @@ void ThreadPoolExecutor::runTask(const ThreadPtr& thread, Task&& task) {
       task.func_ = nullptr;
       stats.expired = true;
       if (task.expireCallback_ != nullptr) {
-        invokeCatchingExns(
-            "ThreadPoolExecutor: expireCallback",
-            std::exchange(task.expireCallback_, {}));
+        task.expireCallback_();
       }
     } else {
-      invokeCatchingExns(
-          "ThreadPoolExecutor: func", std::exchange(task.func_, {}));
+      task.func_();
       task.expireCallback_ = nullptr;
     }
   }

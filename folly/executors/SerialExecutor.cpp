@@ -79,7 +79,7 @@ void SerialExecutor::run() {
     queue_.dequeue(task);
 
     folly::RequestContextScopeGuard ctxGuard(std::move(task.ctx));
-    invokeCatchingExns("SerialExecutor: func", std::exchange(task.func, {}));
+    task.func();
 
     // We want scheduled_ to guard side-effects of completed tasks, so we can't
     // use std::memory_order_relaxed here.

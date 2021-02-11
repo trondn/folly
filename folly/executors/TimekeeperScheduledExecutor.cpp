@@ -30,8 +30,7 @@ TimekeeperScheduledExecutor::create(
 }
 
 void TimekeeperScheduledExecutor::run(Func func) {
-  invokeCatchingExns(
-      "TimekeeperScheduledExecutor: func", std::exchange(func, {}));
+  func();
 }
 
 void TimekeeperScheduledExecutor::add(Func func) {

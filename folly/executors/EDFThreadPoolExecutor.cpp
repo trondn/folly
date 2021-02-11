@@ -363,9 +363,7 @@ void EDFThreadPoolExecutor::threadRun(ThreadPtr thread) {
     }
 
     stats.waitTime = startTime - stats.enqueueTime;
-    invokeCatchingExns("EDFThreadPoolExecutor: func", [&] {
-      std::exchange(task, {})->run(iter);
-    });
+    task->run(iter);
     stats.runTime = std::chrono::steady_clock::now() - startTime;
     thread->idle.store(true, std::memory_order_relaxed);
     thread->lastActiveTime.store(
@@ -374,11 +372,9 @@ void EDFThreadPoolExecutor::threadRun(ThreadPtr thread) {
     thread->taskStatsCallbacks->callbackList.withRLock([&](auto& callbacks) {
       inCallback = true;
       SCOPE_EXIT { inCallback = false; };
-      invokeCatchingExns("EDFThreadPoolExecutor: stats callback", [&] {
-        for (auto& callback : callbacks) {
-          callback(stats);
-        }
-      });
+      for (auto& callback : callbacks) {
+        callback(stats);
+      }
     });
   }
 }
