@@ -94,15 +94,7 @@ void ThreadPoolExecutor::runTask(const ThreadPtr& thread, Task&& task) {
     }
   } else {
     folly::RequestContextScopeGuard rctx(task.context_);
-    try {
-      task.func_();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "ThreadPoolExecutor: func threw unhandled "
-                 << typeid(e).name() << " exception: " << e.what();
-    } catch (...) {
-      LOG(ERROR) << "ThreadPoolExecutor: func threw unhandled non-exception "
-                    "object";
-    }
+    task.func_();
     stats.runTime = std::chrono::steady_clock::now() - startTime;
   }
 
