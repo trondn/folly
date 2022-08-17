@@ -40,12 +40,6 @@
 #include <folly/net/NetworkSocket.h>
 #include <folly/portability/Sockets.h>
 
-// Due to the way kernel headers are included, this may or may not be defined.
-// Number pulled from 3.10 kernel headers.
-#ifndef SO_REUSEPORT
-#define SO_REUSEPORT 15
-#endif
-
 #if defined __linux__ && !defined SO_NO_TRANSPARENT_TLS
 #define SO_NO_TRANSPARENT_TLS 200
 #endif
@@ -740,6 +734,37 @@ class AsyncServerSocket : public DelayedDestruction, public AsyncSocketBase {
   bool getReusePortEnabled_() const { return reusePortEnabled_; }
 
   /**
+   * Set whether or not SO_REUSEADDR should be enabled on the server socket.
+   * By default it is set to true
+   */
+  void setReuseAddrEnabled(bool enabled) {
+    reuseAddrEnabled_ = enabled;
+
+    for (auto& handler : sockets_) {
+      if (handler.socket_ == NetworkSocket()) {
+        continue;
+      }
+
+      int val = (enabled) ? 1 : 0;
+      if (netops::setsockopt(
+              handler.socket_, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) !=
+          0) {
+        auto errnoCopy = errno;
+        LOG(ERROR) << "failed to set SO_REUSEADDR on async server socket "
+                   << errnoCopy;
+        folly::throwSystemErrorExplicit(
+            errnoCopy, "failed to set SO_REUSEADDR on async server socket");
+      }
+    }
+  }
+
+  /**
+   * Get whether or not SO_REUSEADDR is enabled on the server socket.
+   */
+  bool getReuseAddrEnabled_() const { return reuseAddrEnabled_; }
+
+
+  /**
    * Set whether or not the socket should close during exec() (FD_CLOEXEC). By
    * default, this is enabled
    */
@@ -966,6 +991,7 @@ class AsyncServerSocket : public DelayedDestruction, public AsyncSocketBase {
   std::vector<CallbackInfo> callbacks_;
   bool keepAliveEnabled_;
   bool reusePortEnabled_{false};
+  bool reuseAddrEnabled_{true};
   bool closeOnExec_;
   bool tfo_{false};
   bool noTransparentTls_{false};

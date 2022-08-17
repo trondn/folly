@@ -30,12 +30,6 @@
 #include <folly/portability/Unistd.h>
 #include <folly/small_vector.h>
 
-// Due to the way kernel headers are included, this may or may not be defined.
-// Number pulled from 3.10 kernel headers.
-#ifndef SO_REUSEPORT
-#define SO_REUSEPORT 15
-#endif
-
 #if FOLLY_HAVE_VLA
 #define FOLLY_HAVE_VLA_01 1
 #else
