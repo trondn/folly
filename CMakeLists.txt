@@ -76,6 +76,8 @@ fb_activate_static_library_option()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+message(STATUS "Using C++ flags ${CMAKE_CXX_FLAGS}")
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Check target architecture
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -437,32 +439,12 @@ install(
   COMPONENT dev
 )
 
-# Generate a pkg-config file so that downstream projects that don't use
-# CMake can depend on folly using pkg-config.
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/libfolly.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/libfolly.pc.gen
-  @ONLY
-)
-
 # Specify target to allow resolving generator expressions requiring
 # a target for CMake >=3.19. See #1414.
 # VERSION_GREATER_EQUAL isn't available before CMake 3.7.
 if(NOT CMAKE_VERSION VERSION_LESS 3.19)
   set(target_arg TARGET folly_deps)
 endif()
-
-file(
-  GENERATE
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/libfolly.pc
-  INPUT ${CMAKE_CURRENT_BINARY_DIR}/libfolly.pc.gen
-  ${target_arg}
-)
-install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/libfolly.pc
-  DESTINATION ${LIB_INSTALL_DIR}/pkgconfig
-  COMPONENT dev
-)
 
 option(BUILD_TESTS "If enabled, compile the tests." OFF)
 option(BUILD_BROKEN_TESTS "If enabled, compile tests that are known to be broken." OFF)

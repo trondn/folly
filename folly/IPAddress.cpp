@@ -96,7 +96,7 @@ CIDRNetwork IPAddress::createNetwork(
   if (ret.error() == CIDRNetworkError::INVALID_IP_SLASH_CIDR) {
     throw IPAddressFormatException(fmt::format(
         "Invalid ipSlashCidr specified. Expected IP/CIDR format, got '{}'",
-        ipSlashCidr));
+        std::string_view(ipSlashCidr)));
   }
 
   // Handler the remaining error cases. We re-parse the ip/mask pair

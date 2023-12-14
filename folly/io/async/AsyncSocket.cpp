@@ -4069,10 +4069,10 @@ std::string AsyncSocket::withAddr(folly::StringPiece s) {
   }
 
   return fmt::format(
-      "{} (peer={}{})",
-      s,
+      "{} (peer={}, local={})",
+      std::string_view(s),
       peer.describe(),
-      kIsMobile ? "" : fmt::format(", local={}", local.describe()));
+      local.describe());
 }
 
 void AsyncSocket::setBufferCallback(BufferCallback* cb) {
