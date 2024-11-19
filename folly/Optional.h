@@ -451,7 +451,7 @@ class Optional {
       char emptyState;
       Value value;
     };
-    bool hasValue;
+    bool hasValue = false;
 
     constexpr StorageTriviallyDestructible()
         : emptyState(unsafe_default_initialized), hasValue{false} {}
@@ -463,7 +463,7 @@ class Optional {
       char emptyState;
       Value value;
     };
-    bool hasValue;
+    bool hasValue=false;
 
     FOLLY_CXX20_CONSTEXPR StorageNonTriviallyDestructible() : hasValue{false} {}
     ~StorageNonTriviallyDestructible() { clear(); }
