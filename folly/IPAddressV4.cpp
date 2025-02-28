@@ -70,7 +70,7 @@ uint32_t IPAddressV4::toLong(StringPiece ip) {
   in_addr addr;
   if (inet_pton(AF_INET, str.c_str(), &addr) != 1) {
     throw IPAddressFormatException(
-        fmt::format("Can't convert invalid IP '{}' to long", ip));
+        fmt::format("Can't convert invalid IP '{}' to long", std::string_view(ip)));
   }
   return addr.s_addr;
 }
@@ -148,7 +148,7 @@ IPAddressV4 IPAddressV4::fromInverseArpaName(const std::string& arpaname) {
   std::vector<StringPiece> pieces;
   split(".", piece, pieces);
   if (pieces.size() != 4) {
-    throw IPAddressFormatException(fmt::format("Invalid input. Got {}", piece));
+    throw IPAddressFormatException(fmt::format("Invalid input. Got {}", std::string_view(piece)));
   }
   // reverse 1.0.168.192 -> 192.168.0.1
   return IPAddressV4(join(".", pieces.rbegin(), pieces.rend()));

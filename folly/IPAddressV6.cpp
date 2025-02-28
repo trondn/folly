@@ -213,7 +213,7 @@ IPAddressV6 IPAddressV6::fromInverseArpaName(const std::string& arpaname) {
   split(".", piece, pieces);
   if (pieces.size() != 32) {
     throw IPAddressFormatException(
-        fmt::format("Invalid input. Got '{}'", piece));
+        fmt::format("Invalid input. Got '{}'", std::string_view(piece)));
   }
   std::array<char, IPAddressV6::kToFullyQualifiedSize> ip;
   size_t pos = 0;
