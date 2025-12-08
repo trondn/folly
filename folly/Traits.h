@@ -388,9 +388,12 @@ FOLLY_INLINE_VARIABLE constexpr bool is_detected_v =
 template <template <typename...> class T, typename... A>
 struct is_detected : detected_or<nonesuch, T, A...>::value_t {};
 
+FOLLY_PUSH_WARNING
+FOLLY_CLANG_DISABLE_WARNING("-Wdeprecated")
 template <typename T>
 using aligned_storage_for_t =
     typename std::aligned_storage<sizeof(T), alignof(T)>::type;
+FOLLY_POP_WARNING
 
 // Older versions of libstdc++ do not provide std::is_trivially_copyable
 #if defined(__clang__) && !defined(_LIBCPP_VERSION)
